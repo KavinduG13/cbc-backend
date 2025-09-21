@@ -61,6 +61,7 @@ export async function deleteProduct(req, res) {
     }
     try {
         const productID = req.params.productID
+        console.log(productID);
 
         await Product.deleteOne(
             {
