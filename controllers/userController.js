@@ -356,7 +356,7 @@ export async function sendOTP(req, res) {
                     message: "User not found",
                 }
             )
-            return;    
+            return;
         }
 
         await OTP.deleteMany(
@@ -450,5 +450,72 @@ export async function changePasswordViaOTP(req, res) {
                 message: "Failed to change password",
             }
         )
+    }
+}
+
+export async function updateUserData(req, res) {
+    if (req.user == null) {
+        res.status(401).json(
+            {
+                message: "Unauthorized"
+            }
+        )
+        return;
+    }
+
+    try {
+        await User.updateOne(
+            {
+                email: req.user.email
+            }, {
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            image: req.body.image,
+        }
+        )
+        res.json(
+            {
+                message: "User data updated successfully"
+            }
+        )
+    } catch (err) {
+        res.status(500).json(
+            {
+                message: "Failed to update user data"
+            }
+        )
+        return;
+    }
+}
+
+export async function updatePassword(req, res) {
+    if (req.user == null) {
+        res.status(401).json(
+            {
+                message: "Unauthorized"
+            }
+        )
+        return;
+    }
+    try {
+        const hashedPassword = bcrypt.hashSync(req.body.password, 10)
+        await User.updateOne(
+            {
+                email: req.user.email
+            }, {
+            password: hashedPassword,
+        })
+        res.json(
+            {
+                message: "Password updated successfully"
+            }
+        )
+    } catch (err) {
+        res.status(500).json(
+            {
+                message: "Failed to update password"
+            }
+        )
+        return;
     }
 }
