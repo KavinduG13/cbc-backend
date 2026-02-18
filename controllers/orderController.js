@@ -169,6 +169,28 @@ export async function getOrders(req, res) {
     }
 }
 
+export async function myOrders(req, res) {
+    if (req.user == null) {
+        res.status(401).json(
+            {
+                message: "Unauthorized user"
+            }
+        )
+        return;
+    } else {
+        try {
+            const orders = await Order.find({email: req.user.email}).sort({date:-1})
+            res.json(orders)
+        } catch(err) {
+            res.status(500).json(
+                {
+                    message: "Failed to fetch orders"
+                }
+            )
+        }
+    }
+}
+
 export async function updateOrderStatus(req, res) {
     if (!isAdmin(req)) {
         res.status(403).json(
